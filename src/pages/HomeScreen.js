@@ -5,9 +5,9 @@ import {
   getWhatHeShould,
   getWhatHeShouldNot,
 } from '../../database';
+
 const HomeScreen = () => {
   const [time, setTime] = useState(new Date());
-  const timeString = time.getHours() + ':' + time.getMinutes();
   const normalized = time
     .toLocaleTimeString(navigator.language, {
       hour: '2-digit',
@@ -29,7 +29,6 @@ const HomeScreen = () => {
   }, []);
   return (
     <SafeAreaView>
-      <Text>{timeString}</Text>
       <Text>{normalized}</Text>
       <Text>What he shouldn't do</Text>
       <FlatList renderItem={renderShouldNotItem} data={whatHeShouldNot} />
