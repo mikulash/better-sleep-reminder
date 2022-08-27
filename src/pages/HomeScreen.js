@@ -1,71 +1,88 @@
-import React, {useEffect, useState} from 'react';
-import {FlatList, SafeAreaView, Text, View} from 'react-native';
+import React, {useState} from 'react';
 import {
-  getWhatHeCan,
-  getWhatHeShould,
-  getWhatHeShouldNot,
-} from '../../database';
+  Alert,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+} from 'react-native';
+
+import SetupScreen from './Setup';
+import Time from '../elements/Time';
+import {ListOfGroupedItems} from '../elements/ListOfGroupedItems';
 
 const HomeScreen = () => {
-  const [time, setTime] = useState(new Date());
-  const normalized = time
-    .toLocaleTimeString(navigator.language, {
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-    .slice(0, -3); //remove seconds to be able to compare strings
-
-  const whatHeCan = getWhatHeCan(normalized);
-  const whatHeShouldNot = getWhatHeShouldNot(normalized);
-  const whatHeShould = getWhatHeShould(normalized);
-  const DATA = [whatHeCan, whatHeShould, whatHeShouldNot];
-  console.log(DATA);
-  console.log(whatHeCan);
-  useEffect(() => {
-    const interval = setInterval(() => setTime(new Date()), 30000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <SafeAreaView>
-      <Text>{normalized}</Text>
-      <Text>What he shouldn't do</Text>
-      <FlatList renderItem={renderShouldNotItem} data={whatHeShouldNot} />
-      <Text>What he should do</Text>
-      <FlatList renderItem={renderShouldItem} data={whatHeShould} />
-      <Text>What he can do</Text>
-      <FlatList renderItem={renderCanItem} data={whatHeCan} />
+      <Time />
+      <ListOfGroupedItems />
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalVisible}
+        onRequestClose={() => {
+          Alert.alert('Modal has been closed.');
+          setModalVisible(!modalVisible);
+        }}>
+        <SetupScreen />
+        <Pressable
+          style={[styles.button, styles.buttonClose]}
+          onPress={() => setModalVisible(!modalVisible)}>
+          <Text style={styles.textStyle}>Hide Modal</Text>
+        </Pressable>
+      </Modal>
+      <Pressable
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => setModalVisible(true)}>
+        <Text style={styles.textStyle}>settings</Text>
+      </Pressable>
     </SafeAreaView>
   );
 };
 export default HomeScreen;
 
-const renderShouldNotItem = ({item}) => <ShouldNotItem item={item} />;
-const renderShouldItem = ({item}) => <ShouldItem item={item} />;
-const renderCanItem = ({item}) => <CanItem item={item} />;
-
-const ShouldNotItem = props => {
-  console.log('props', props);
-  return (
-    <View>
-      <Text>{props.item.name}</Text>
-    </View>
-  );
-};
-const ShouldItem = props => {
-  console.log('props', props);
-  return (
-    <View>
-      <Text>{props.item.name}</Text>
-    </View>
-  );
-};
-const CanItem = props => {
-  console.log('props', props);
-  return (
-    <View>
-      <Text>{props.item.name}</Text>
-    </View>
-  );
-};
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+});

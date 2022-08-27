@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {Text, View} from 'react-native';
 import TimePicker from '../elements/TimePicker';
 
 const SetupScreen = () => {
@@ -7,6 +7,7 @@ const SetupScreen = () => {
   const goToSleepButtonTitle = 'Pick a time you want to go to sleep';
   return (
     <View>
+      <Text>Settings</Text>
       <TimePicker title={wakeUpButtonTitle} />
       <TimePicker title={goToSleepButtonTitle} />
     </View>

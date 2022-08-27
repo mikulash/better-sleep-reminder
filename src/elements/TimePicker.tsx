@@ -4,11 +4,10 @@ import DatePicker from 'react-native-date-picker';
 
 const TimePicker = (props: {title: string}) => {
   const [date, setDate] = useState(new Date());
-  console.log('date', date.getMinutes());
   const [open, setOpen] = useState(false);
   return (
     <View>
-      <Text> Headline</Text>
+      <Text> ___________ </Text>
       <Pressable
         style={[styles.button, styles.buttonOpen]}
         onPress={() => setOpen(true)}>
@@ -22,6 +21,7 @@ const TimePicker = (props: {title: string}) => {
         onConfirm={time => {
           setOpen(false);
           setDate(time);
+          console.log('time type', time.getTime());
         }}
         onCancel={() => {
           setOpen(false);
@@ -31,6 +31,7 @@ const TimePicker = (props: {title: string}) => {
   );
 };
 export default TimePicker;
+
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
