@@ -7,19 +7,31 @@ import {
 } from '../utils/database';
 import {getNiceTime} from '../utils/functions';
 
-export const ListOfGroupedItems = () => {
+export const ListOfRuleTypes = () => {
   const normalized = getNiceTime(new Date());
   const whatHeCan = getWhatHeCan(normalized);
   const whatHeShouldNot = getWhatHeShouldNot(normalized);
   const whatHeShould = getWhatHeShould(normalized);
   return (
     <>
-      <Text>What he shouldnt do</Text>
-      <FlatList renderItem={renderShouldNotItem} data={whatHeShouldNot} />
-      <Text>What he should do</Text>
-      <FlatList renderItem={renderShouldItem} data={whatHeShould} />
-      <Text>What he can do</Text>
-      <FlatList renderItem={renderCanItem} data={whatHeCan} />
+      {whatHeShouldNot.length > 0 && (
+        <>
+          <Text>What he shouldnt do</Text>
+          <FlatList renderItem={renderShouldNotItem} data={whatHeShouldNot} />
+        </>
+      )}
+      {whatHeShould.length > 0 && (
+        <>
+          <Text>What he should do</Text>
+          <FlatList renderItem={renderShouldItem} data={whatHeShould} />
+        </>
+      )}
+      {whatHeCan.length > 0 && (
+        <>
+          <Text>What he can do</Text>
+          <FlatList renderItem={renderCanItem} data={whatHeCan} />
+        </>
+      )}
     </>
   );
 };
@@ -29,7 +41,6 @@ const renderShouldItem = ({item}: any) => <ShouldItem item={item} />;
 const renderCanItem = ({item}: any) => <CanItem item={item} />;
 
 const ShouldNotItem = (props: {item: Item}) => {
-  console.log('props', props);
   return (
     <View>
       <Text>{props.item.name}</Text>
@@ -37,7 +48,6 @@ const ShouldNotItem = (props: {item: Item}) => {
   );
 };
 const ShouldItem = (props: {item: Item}) => {
-  console.log('props', props);
   return (
     <View>
       <Text>{props.item.name}</Text>
@@ -45,7 +55,6 @@ const ShouldItem = (props: {item: Item}) => {
   );
 };
 const CanItem = (props: {item: Item}) => {
-  console.log('props', props);
   return (
     <View>
       <Text>{props.item.name}</Text>

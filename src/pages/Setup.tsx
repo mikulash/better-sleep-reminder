@@ -8,8 +8,8 @@ const SetupScreen = () => {
   return (
     <View>
       <Text>Settings</Text>
-      <TimePicker title={wakeUpButtonTitle} />
-      <TimePicker title={goToSleepButtonTitle} />
+      <TimePicker title={wakeUpButtonTitle} storageKey={'wakeUpTime'} />
+      <TimePicker title={goToSleepButtonTitle} storageKey={'goToSleepTime'} />
     </View>
   );
 };

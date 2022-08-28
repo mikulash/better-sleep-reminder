@@ -4,11 +4,11 @@ import {Alert} from 'react-native';
 export const data = {
   // todo change to proper data
   should: [
-    {name: 'view sunlight', from: '00:00', to: '24:00'},
+    {name: 'view sunlight', from: '00:00', to: '24:00', afterWakeUp: 1},
     {name: 'hot shower', from: '00:00', to: '04:00'},
   ],
   can: [
-    {name: 'caffeine', from: '00:00', to: '24:00'},
+    {name: 'caffeine', from: '00:00', to: '24:00', beforeSleep: 10},
     {name: 'workout', from: '00:00', to: '22:00'},
     {name: 'cold shower', from: '00:00', to: '12:00'},
     {name: 'drink water', from: '00:00', to: '12:00'},
@@ -27,7 +27,7 @@ export const getWhatHeShouldNot = (time: string) => {
   return result;
 };
 
-const storeData = async (key: string, value: string) => {
+export const storeData = async (key: string, value: string) => {
   try {
     await AsyncStorage.setItem(key, value);
   } catch (e) {
@@ -36,13 +36,11 @@ const storeData = async (key: string, value: string) => {
   }
 };
 
-const getData = async () => {
+export const getData = async (key: string) => {
   try {
-    const value = await AsyncStorage.getItem('@storage_Key');
-    if (value !== null) {
-      return value;
-    }
+    return await AsyncStorage.getItem(key);
   } catch (e) {
+    console.log('fail');
     console.log(e);
     Alert.alert('error. could not get data');
     return null;

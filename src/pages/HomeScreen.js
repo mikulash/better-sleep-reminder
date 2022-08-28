@@ -10,14 +10,14 @@ import {
 
 import SetupScreen from './Setup';
 import Time from '../elements/Time';
-import {ListOfGroupedItems} from '../elements/ListOfGroupedItems';
+import {ListOfRuleTypes} from '../elements/ListOfRuleTypes';
 
 const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   return (
     <SafeAreaView>
       <Time />
-      <ListOfGroupedItems />
+      <ListOfRuleTypes />
       <Modal
         animationType="slide"
         transparent={false}

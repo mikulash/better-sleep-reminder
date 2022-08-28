@@ -1,10 +1,16 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import DatePicker from 'react-native-date-picker';
+import {getData, storeData} from '../utils/database';
+import {getNiceTime} from '../utils/functions';
 
-const TimePicker = (props: {title: string}) => {
+const TimePicker = (props: {title: string; storageKey: string}) => {
   const [date, setDate] = useState(new Date());
   const [open, setOpen] = useState(false);
+  const [showTime, setShowTime] = useState('');
+  useEffect(() => {
+    getData(props.storageKey).then(data => (data ? setShowTime(data) : ''));
+  });
   return (
     <View>
       <Text> ___________ </Text>
@@ -21,12 +27,21 @@ const TimePicker = (props: {title: string}) => {
         onConfirm={time => {
           setOpen(false);
           setDate(time);
-          console.log('time type', time.getTime());
+          console.log('time type', getNiceTime(time));
+          storeData(props.storageKey, getNiceTime(time)).then(() =>
+            console.log('successfully stored'),
+          );
+          getData(props.storageKey).then(data =>
+            data ? setShowTime(data) : '',
+          );
         }}
         onCancel={() => {
           setOpen(false);
         }}
       />
+      {showTime && (
+        <Text>Your time of usual falling asleep is : {showTime}</Text>
+      )}
     </View>
   );
 };
