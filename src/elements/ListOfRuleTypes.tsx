@@ -1,17 +1,32 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {FlatList, Text, View} from 'react-native';
 import {
+  getData,
   getWhatHeCan,
   getWhatHeShould,
   getWhatHeShouldNot,
+  splitRelevantData,
 } from '../utils/database';
-import {getNiceTime} from '../utils/functions';
+import {getNiceTime, timeStringToHoursAndMinutes} from '../utils/functions';
 
 export const ListOfRuleTypes = () => {
   const normalized = getNiceTime(new Date());
   const whatHeCan = getWhatHeCan(normalized);
   const whatHeShouldNot = getWhatHeShouldNot(normalized);
   const whatHeShould = getWhatHeShould(normalized);
+  const [wakeUpTime, setWakeUpTime] = useState('');
+  const [goToSleepTime, setGoToSleepTime] = useState('');
+  useEffect(() => {
+    getData('wakeUpTime').then(data => (data ? setWakeUpTime(data) : ''));
+    getData('goToSleepTime').then(data => (data ? setGoToSleepTime(data) : ''));
+  });
+  if (wakeUpTime && goToSleepTime) {
+    console.log('times they are a changing', wakeUpTime, goToSleepTime);
+    const myWakeUpTime = timeStringToHoursAndMinutes(wakeUpTime);
+    const myGoToSleepTime = timeStringToHoursAndMinutes(goToSleepTime);
+    const rules = splitRelevantData(myWakeUpTime, myGoToSleepTime);
+    console.log('rules', rules);
+  }
   return (
     <>
       {whatHeShouldNot.length > 0 && (

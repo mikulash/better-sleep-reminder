@@ -17,7 +17,9 @@ const TimePicker = (props: {title: string; storageKey: string}) => {
       <Pressable
         style={[styles.button, styles.buttonOpen]}
         onPress={() => setOpen(true)}>
-        <Text style={styles.textStyle}>{props.title}</Text>
+        <Text style={styles.textStyle}>
+          Pick a time of your usual {props.title}
+        </Text>
       </Pressable>
       <DatePicker
         mode={'time'}
@@ -40,7 +42,9 @@ const TimePicker = (props: {title: string; storageKey: string}) => {
         }}
       />
       {showTime && (
-        <Text>Your time of usual falling asleep is : {showTime}</Text>
+        <Text>
+          Your time of {props.title} is : {showTime}
+        </Text>
       )}
     </View>
   );
