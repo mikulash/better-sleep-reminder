@@ -6,13 +6,17 @@ enum importance {
   can,
   should,
 }
+interface facts {
+  name: string;
+  message?: string; // maybe link to source why it is important and here at this time
+}
 
 interface Activity {
-  name: string;
   doInTheMorning: boolean; // should be doing in the first half of the day
   countFromMorning: boolean; // day divider count from morning or night
   numOfHours: number; // how many hours from morning/night
   importance: importance; // can or should the user do it
+  facts: facts; // what is the user supposed to know about it
 }
 
 export interface MyTime {
@@ -22,34 +26,42 @@ export interface MyTime {
 
 const properData: Activity[] = [
   {
-    name: 'caffeine',
     doInTheMorning: true,
     countFromMorning: false,
     numOfHours: 10,
     importance: importance.can,
+    facts: {
+      name: 'caffeine',
+      message:
+        'Caffeine affects your sleep so you should not consume it for at least 10 hours before bedtime.',
+    },
   },
   {
-    name: 'watchSun',
     doInTheMorning: true,
     countFromMorning: true,
     numOfHours: 1,
     importance: importance.should,
+    facts: {
+      name: 'watchSun',
+    },
   },
   {
-    name: 'workout',
     doInTheMorning: true,
     countFromMorning: false,
     numOfHours: 2,
     importance: importance.can,
+    facts: {
+      name: 'workout',
+    },
   },
 ];
 
 export const splitRelevantData = (morningTime: MyTime, eveningTime: MyTime) => {
   const timeNow = timeStringToHoursAndMinutes(getNiceTime(new Date()));
-  let canDoActivities: Activity[] = [],
-    shouldDoActivities: Activity[] = [],
-    shouldNotDoActivities: Activity[] = [];
-  console.log(canDoActivities, 'splitRelevantData');
+  let canDoActivities: facts[] = [],
+    shouldDoActivities: facts[] = [],
+    shouldNotDoActivities: facts[] = [];
+  // todo zjednodusit tenhle clusterfuck
   properData.forEach(activity => {
     if (activity.importance === importance.can) {
       if (activity.countFromMorning) {
@@ -57,42 +69,43 @@ export const splitRelevantData = (morningTime: MyTime, eveningTime: MyTime) => {
         if (timeNow.hours < morningTime.hours + activity.numOfHours) {
           // jsem ve spodni pulce
           if (activity.doInTheMorning) {
-            canDoActivities.push(activity);
-          } else shouldNotDoActivities.push(activity);
+            canDoActivities.push(activity.facts);
+          } else shouldNotDoActivities.push(activity.facts);
         }
         if (activity.doInTheMorning) {
-          shouldNotDoActivities.push(activity);
-        } else canDoActivities.push(activity);
+          shouldNotDoActivities.push(activity.facts);
+        } else canDoActivities.push(activity.facts);
       } else {
         // pocitam zhora
         if (timeNow.hours < eveningTime.hours - activity.numOfHours) {
           // jsem v ve spodni pulce pulce
           if (activity.doInTheMorning) {
-            canDoActivities.push(activity);
-          } else shouldNotDoActivities.push(activity);
+            canDoActivities.push(activity.facts);
+          } else shouldNotDoActivities.push(activity.facts);
         }
         if (activity.doInTheMorning) {
-          shouldNotDoActivities.push(activity);
-        } else canDoActivities.push(activity);
+          shouldNotDoActivities.push(activity.facts);
+        } else canDoActivities.push(activity.facts);
       }
     } else {
       // tohle bych mel delat, pokud spatny cas tak ignore
       if (activity.countFromMorning) {
         if (timeNow.hours < morningTime.hours + activity.numOfHours) {
           // jsem v dolni pulce
-          if (activity.doInTheMorning) shouldDoActivities.push(activity);
+          if (activity.doInTheMorning) shouldDoActivities.push(activity.facts);
         } else {
           //  jsem v horni pulce
-          if (!activity.doInTheMorning) shouldDoActivities.push(activity);
+          if (!activity.doInTheMorning) shouldDoActivities.push(activity.facts);
         }
       } else {
         //  pocitej zhora
         if (timeNow.hours < eveningTime.hours - activity.numOfHours) {
           if (activity.doInTheMorning) {
-            shouldDoActivities.push(activity);
+            shouldDoActivities.push(activity.facts);
           } else {
             //  jsem v horni pulce
-            if (!activity.doInTheMorning) shouldDoActivities.push(activity);
+            if (!activity.doInTheMorning)
+              shouldDoActivities.push(activity.facts);
           }
         }
       }
@@ -119,18 +132,6 @@ export const data = {
   ],
 };
 
-export const getWhatHeCan = (time: string) => {
-  return data.can.filter(item => item.from < time && item.to > time);
-};
-export const getWhatHeShould = (time: string) => {
-  return data.should.filter(item => item.from < time && item.to > time);
-};
-export const getWhatHeShouldNot = (time: string) => {
-  const result = data.should.filter(item => item.from > time || item.to < time);
-  result.push(...data.can.filter(item => item.from > time || item.to < time));
-  return result;
-};
-
 export const storeData = async (key: string, value: string) => {
   try {
     await AsyncStorage.setItem(key, value);
@@ -144,8 +145,7 @@ export const getData = async (key: string) => {
   try {
     return await AsyncStorage.getItem(key);
   } catch (e) {
-    console.log('fail');
-    console.log(e);
+    console.log('fail', e);
     Alert.alert('error. could not get data');
     return null;
   }

@@ -1,19 +1,9 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, Text, View} from 'react-native';
-import {
-  getData,
-  getWhatHeCan,
-  getWhatHeShould,
-  getWhatHeShouldNot,
-  splitRelevantData,
-} from '../utils/database';
-import {getNiceTime, timeStringToHoursAndMinutes} from '../utils/functions';
+import {FlatList, SafeAreaView, ScrollView, Text, View} from 'react-native';
+import {getData, splitRelevantData} from '../utils/database';
+import {timeStringToHoursAndMinutes} from '../utils/functions';
 
 export const ListOfRuleTypes = () => {
-  const normalized = getNiceTime(new Date());
-  const whatHeCan = getWhatHeCan(normalized);
-  const whatHeShouldNot = getWhatHeShouldNot(normalized);
-  const whatHeShould = getWhatHeShould(normalized);
   const [wakeUpTime, setWakeUpTime] = useState('');
   const [goToSleepTime, setGoToSleepTime] = useState('');
   useEffect(() => {
@@ -25,40 +15,34 @@ export const ListOfRuleTypes = () => {
     const myWakeUpTime = timeStringToHoursAndMinutes(wakeUpTime);
     const myGoToSleepTime = timeStringToHoursAndMinutes(goToSleepTime);
     const rules = splitRelevantData(myWakeUpTime, myGoToSleepTime);
-    console.log('rules', rules);
+    console.log('rules', rules.shouldNotDo);
+    return (
+      <SafeAreaView>
+        <ScrollView>
+          <Text>What he shouldnt do</Text>
+          <FlatList renderItem={renderShouldNotItem} data={rules.shouldNotDo} />
+          <Text>What he should do</Text>
+          <FlatList renderItem={renderShouldItem} data={rules.shouldDo} />
+          <Text>What he can do</Text>
+          <FlatList renderItem={renderCanItem} data={rules.canDo} />
+        </ScrollView>
+      </SafeAreaView>
+    );
   }
   return (
-    <>
-      {whatHeShouldNot.length > 0 && (
-        <>
-          <Text>What he shouldnt do</Text>
-          <FlatList renderItem={renderShouldNotItem} data={whatHeShouldNot} />
-        </>
-      )}
-      {whatHeShould.length > 0 && (
-        <>
-          <Text>What he should do</Text>
-          <FlatList renderItem={renderShouldItem} data={whatHeShould} />
-        </>
-      )}
-      {whatHeCan.length > 0 && (
-        <>
-          <Text>What he can do</Text>
-          <FlatList renderItem={renderCanItem} data={whatHeCan} />
-        </>
-      )}
-    </>
+    <Text>Go to settings and select time of waking up and going to sleep</Text>
   );
 };
 
 const renderShouldNotItem = ({item}: any) => <ShouldNotItem item={item} />;
 const renderShouldItem = ({item}: any) => <ShouldItem item={item} />;
 const renderCanItem = ({item}: any) => <CanItem item={item} />;
-
-const ShouldNotItem = (props: {item: Item}) => {
+// todo add style
+const ShouldNotItem = (props: any) => {
   return (
     <View>
       <Text>{props.item.name}</Text>
+      {!!props.item.message && <Text>{props.item.message}</Text>}
     </View>
   );
 };
